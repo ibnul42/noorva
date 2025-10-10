@@ -1,0 +1,15 @@
+{
+  "name": "noorva-backend",
+  "version": "0.1.0",
+  "description": "Express backend for Noorva",
+  "main": "server.js",
+  "scripts": {
+    "dev": "node --watch server.js"
+  },
+  "author": "",
+  "license": "MIT",
+  "dependencies": {
+    "dotenv": "^17.2.3",
+    "express": "^5.1.0"
+  }
+}
