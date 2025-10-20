@@ -1,4 +1,5 @@
 const { Error, handleError } = require("../lib/errors");
+const { signToken, verifyToken, cookieOptions } = require('../lib/auth')
 const User = require("../models/User");
 
 const registerSuperAdmin = async (req, res) => {
@@ -94,4 +95,58 @@ const register = async (req, res) => {
   }
 };
 
-module.exports = { registerSuperAdmin, register };
+const login = async (req, res) => {
+  try {
+    const { identifier, password } = req.body; // identifier can be email or username
+    if (!identifier || !password) return Error(res, 400, 'identifier and password required')
+
+    const q = identifier.includes('@') ? { email: identifier } : { username: identifier.toLowerCase() }
+    const user = await User.findOne(q)
+    if (!user) return Error(res, 401, 'invalid credentials')
+
+  // only allow login for verified users
+  if (!user.isVerified) return Error(res, 403, 'account not verified')
+
+    const valid = await user.validatePassword(password)
+    if (!valid) return Error(res, 401, 'invalid credentials')
+
+    const { passwordHash, ...safe } = user.toObject()
+    const token = signToken({ id: user._id, role: user.role })
+    res.cookie('token', token, cookieOptions())
+    return res.json(safe)
+  } catch (err) {
+    return handleError(res, err)
+  }
+}
+
+const getMe = async (req, res) => {
+  try {
+    // check cookie first
+    const token = req.cookies?.token || (req.headers.authorization || '').replace('Bearer ', '')
+    if (!token) return Error(res, 401, 'not authenticated')
+
+    const payload = verifyToken(token)
+    if (!payload) return Error(res, 401, 'invalid token')
+
+    const user = await User.findById(payload.id)
+    if (!user) return Error(res, 404, 'user not found')
+
+    const { passwordHash, ...safe } = user.toObject()
+    return res.json(safe)
+  } catch (err) {
+    return handleError(res, err)
+  }
+}
+
+const logout = async (req, res) => {
+  try {
+    res.clearCookie('token')
+    return res.json({ ok: true })
+  } catch (err) {
+    return handleError(res, err)
+  }
+}
+
+module.exports = { registerSuperAdmin, register, login, getMe, logout };
+
+

@@ -6,8 +6,12 @@ const cors = require('cors');
 const app = express();
 const port = process.env.PORT || 3001;
 
-app.use(cors());
+// Allow CORS and credentials so that frontend (on another origin) can receive HttpOnly cookies
+app.use(cors({ origin: true, credentials: true }));
 app.use(express.json());
+// cookie parser for auth
+const cookieParser = require('cookie-parser');
+app.use(cookieParser());
 
 app.get('/health', (req, res) => {
   res.json({ status: 'ok', timestamp: new Date().toISOString() });

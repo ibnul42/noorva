@@ -2,24 +2,40 @@
 
 import Link from 'next/link'
 import { useState } from 'react'
+import { toast } from 'react-toastify'
+import { useRouter } from 'next/navigation'
 
 export default function LoginForm() {
   const [userId, setUserId] = useState('')
   const [password, setPassword] = useState('')
   const [loading, setLoading] = useState(false)
-  const [error, setError] = useState<string | null>(null)
+  const router = useRouter()
 
   async function handleSubmit(e: React.FormEvent) {
     e.preventDefault()
-    setError(null)
     setLoading(true)
     try {
-      // Replace with actual API call
-      await new Promise((r) => setTimeout(r, 700))
-      // For now just log
-      console.log('login', { userId, password })
+      const base = typeof process !== 'undefined' ? process.env.NEXT_PUBLIC_API_BASE : ''
+      const url = base ? `${base.replace(/\/$/, '')}/api/users/login` : '/api/users/login'
+
+      const res = await fetch(url, {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        credentials: 'include',
+        body: JSON.stringify({ identifier: userId, password })
+      })
+
+      if (!res.ok) {
+        const body = await res.json().catch(() => ({}))
+        toast.error(body?.error || 'Failed to sign in')
+        setLoading(false)
+        return
+      }
+
+      // success — backend sets HttpOnly cookie; redirect to dashboard
+      router.push('/dashboard')
     } catch {
-      setError('Failed to sign in')
+      toast.error('Failed to sign in — network error')
     } finally {
       setLoading(false)
     }
@@ -38,7 +54,7 @@ export default function LoginForm() {
               value={userId}
               onChange={(e) => setUserId(e.target.value)}
               className="mt-2 block w-full rounded-lg border border-slate-200 px-4 py-3 focus:outline-none focus:ring-2 focus:ring-emerald-200 text-black/80 placeholder:text-black/20"
-              placeholder="johndoe"
+              placeholder="johndoe or email"
               required
             />
           </div>
@@ -54,8 +70,6 @@ export default function LoginForm() {
               required
             />
           </div>
-
-          {error && <div className="text-red-600 text-sm">{error}</div>}
 
           <button
             type="submit"
