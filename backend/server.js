@@ -19,7 +19,9 @@ app.get('/health', (req, res) => {
 
 // Mount API routes
 const usersRouter = require('./routes/users');
+const superUsersRouter = require('./routes/superUsers');
 app.use('/api/users', usersRouter);
+app.use('/api/users', superUsersRouter);
 const { connectDB } = require('./helper/db');
 
 async function start() {

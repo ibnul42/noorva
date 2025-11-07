@@ -19,15 +19,15 @@ export default function NavigationCard({ item, hasAccess }: NavigationCardProps)
 
   return (
     <div
-      className={`py-5 px-4 rounded-xl shadow transition space-y-2 ${
+      className={`py-5 px-4 rounded-xl shadow transition space-y-2 flex flex-col ${
         hasAccess
           ? "bg-[#008641] text-white hover:shadow-lg"
           : "bg-gray-200 text-gray-500 cursor-not-allowed"
       }`}
     >
       <div className="text-3xl">{item.icon}</div>
-      <h3 className="font-semibold text-lg">{item.title}</h3>
-      <p className="text-sm opacity-90">{item.description}</p>
+      <h3 className="font-semibold text-lg line-clamp-1">{item.title}</h3>
+      <p className="text-sm opacity-90 flex-1 line-clamp-2">{item.description}</p>
 
       {isComingSoon ? (
         <div

@@ -27,7 +27,7 @@ export default async function DashboardPage() {
 
   return (
     <div className="min-h-screen p-6">
-      <div className="max-w-3xl w-full bg-white rounded-2xl shadow p-8 mb-8">
+      <div className="mx-auto max-w-5xl w-full bg-white rounded-2xl shadow p-8 mb-8">
         <h1 className="text-2xl font-bold text-emerald-700">Dashboard</h1>
         <p className="mt-4 text-slate-600">
           Welcome back, {user.name || user.username || user.email}.

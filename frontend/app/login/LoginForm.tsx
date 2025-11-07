@@ -33,6 +33,7 @@ export default function LoginForm() {
       }
 
       // success — backend sets HttpOnly cookie; redirect to dashboard
+      router.refresh();
       router.push('/dashboard')
     } catch {
       toast.error('Failed to sign in — network error')
