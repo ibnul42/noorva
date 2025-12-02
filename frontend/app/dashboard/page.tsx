@@ -3,7 +3,7 @@ import { getUserFromCookies } from "@/lib/authServer";
 import NavigationCard from "./NavigationCard";
 
 const navigationItems = [
-  { id: "employeeDB", title: "Employee Database System", description: "Manage employee records, profiles, and organizational data.", icon: "👥", link: "SubFiles-ADMS/EMP-V1.html", category: "HR" },
+  { id: "employeeDB", title: "Employee Database System", description: "Manage employee records, profiles, and organizational data.", icon: "👥", link: "/employee-ms", category: "HR" },
   { id: "customerDB", title: "Customer Database System", description: "Centralized CRM with detailed contact and interaction history.", icon: "🤝", link: "SubFiles-ADMS/CDS-V1.html", category: "CRM" },
   { id: "remittanceDB", title: "Remittance Database System", description: "Track and manage financial transfers securely.", icon: "💸", link: "SubFiles-ADMS/RDS-V1.html", category: "Finance" },
   { id: "officeAccounts", title: "Office Accounts Management", description: "Manage office finances, budgets, and reports.", icon: "📊", link: "", category: "Accounting" },
