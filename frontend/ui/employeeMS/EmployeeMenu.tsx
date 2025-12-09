@@ -1,6 +1,4 @@
-"use client";
-
-import { useState, ReactNode, JSX } from "react";
+import React, { ReactNode, JSX } from "react";
 import {
   UserPlusIcon,
   MagnifyingGlassIcon,
@@ -8,52 +6,52 @@ import {
   BanknotesIcon,
   ArrowDownOnSquareIcon,
 } from "@heroicons/react/24/outline";
-import RegisterEmployee from "./RegisterEmployee";
 import ManageEmployee from "./ManageEmployee";
+import Employee from "./Employee";
 
-type MenuId = "register" | "search" | "attendance" | "salary" | "import";
+type MenuId = "employee" | "search" | "attendance" | "salary" | "import";
 
 interface MenuItem {
   id: MenuId;
   label: string;
-  icon: ReactNode;
+  // icon: ReactNode;
 }
 
-export default function EmployeeMenu() {
-  const [active, setActive] = useState<MenuId>("register");
+export default function EmployeeMenu({ activeTab }: { activeTab?: MenuId }) {
+  const active = activeTab || "employee";
 
   const menuItems: MenuItem[] = [
     {
-      id: "register",
-      label: "Register Employee",
-      icon: <UserPlusIcon className="w-6 h-6" />,
+      id: "employee",
+      label: "Employees",
+      // icon: <UserPlusIcon className="w-6 h-6" />,
     },
-    {
-      id: "search",
-      label: "Search & Manage",
-      icon: <MagnifyingGlassIcon className="w-6 h-6" />,
-    },
+    // {
+    //   id: "search",
+    //   label: "Search & Manage",
+    //   // icon: <MagnifyingGlassIcon className="w-6 h-6" />,
+    // },
     {
       id: "attendance",
-      label: "Attendance System",
-      icon: <ClockIcon className="w-6 h-6" />,
+      label: "Attendance",
+      // icon: <ClockIcon className="w-6 h-6" />,
     },
     {
       id: "salary",
-      label: "Salary Management",
-      icon: <BanknotesIcon className="w-6 h-6" />,
+      label: "Salary",
+      // icon: <BanknotesIcon className="w-6 h-6" />,
     },
     {
       id: "import",
-      label: "Import/Export",
-      icon: <ArrowDownOnSquareIcon className="w-6 h-6" />,
+      label: "Reports",
+      // icon: <ArrowDownOnSquareIcon className="w-6 h-6" />,
     },
   ];
 
   const renderComponent = (): JSX.Element => {
     switch (active) {
-      case "register":
-        return <RegisterEmployee />;
+      case "employee":
+        return <Employee />;
       case "search":
         return <ManageEmployee />;
       case "attendance":
@@ -68,35 +66,27 @@ export default function EmployeeMenu() {
   };
 
   return (
-    <div className="w-full my-3">
+    <div className="my-3">
       {/* Top Navigation Menu */}
-      <div className="w-full max-w-5xl mx-auto flex items-center justify-center gap-16 pb-2">
+      <div className="w-fit flex items-center gap-2 p-1 bg-gray-100 rounded">
         {menuItems.map((item) => (
-          <button
+          <a
             key={item.id}
-            onClick={() => setActive(item.id)}
-            className={`flex flex-col items-center text-sm transition-all cursor-pointer
+            href={`?tab=${item.id}`}
+            className={`flex flex-col items-center text-sm transition-all cursor-pointer p-2
               ${
                 active === item.id
-                  ? "text-green-700 font-semibold"
+                  ? "text-primary font-semibold bg-white rounded"
                   : "text-gray-600 hover:text-gray-800"
               }`}
           >
-            {item.icon}
             <span>{item.label}</span>
-
-            {/* Bottom border for active */}
-            {active === item.id && (
-              <div className="w-full h-[3px] bg-green-600 mt-1 rounded"></div>
-            )}
-          </button>
+          </a>
         ))}
       </div>
 
       {/* Component Output */}
-      <div className="mt-6 bg-white rounded shadow">
-        {renderComponent()}
-      </div>
+      <div className="mt-6 bg-white rounded shadow">{renderComponent()}</div>
     </div>
   );
 }

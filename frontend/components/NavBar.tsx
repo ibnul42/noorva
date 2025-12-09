@@ -71,9 +71,9 @@ export default function NavBar() {
     };
   }, [pathname]);
   return (
-    <header className="bg-white shadow-sm">
+    <header className="bg-primary shadow-sm">
       <div className="max-w-6xl mx-auto px-4 py-3 flex items-center justify-between">
-        <Link href="/" className="text-emerald-600 font-bold text-lg">
+        <Link href="/" className="text-white font-bold text-lg">
           Noorva
         </Link>
         <nav className="space-x-4">

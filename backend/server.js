@@ -20,8 +20,10 @@ app.get('/health', (req, res) => {
 // Mount API routes
 const usersRouter = require('./routes/users');
 const superUsersRouter = require('./routes/superUsers');
+const employeesRouter = require('./routes/employees');
 app.use('/api/users', usersRouter);
 app.use('/api/users', superUsersRouter);
+app.use('/api/employees', employeesRouter);
 const { connectDB } = require('./helper/db');
 
 async function start() {
