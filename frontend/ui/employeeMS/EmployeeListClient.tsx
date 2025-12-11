@@ -3,6 +3,8 @@
 import React, { useState, useMemo } from "react";
 import { EyeIcon, PencilIcon, TrashIcon } from "@heroicons/react/24/outline";
 import { Employee } from "./type";
+import { deleteEmployeeAction } from "./actions";
+import Modal from "@/components/Modal";
 
 interface EmployeeListClientProps {
   employees: Employee[];
@@ -13,15 +15,18 @@ export default function EmployeeListClient({
 }: EmployeeListClientProps) {
   const [searchQuery, setSearchQuery] = useState("");
 
-  // Normalize text for better matching
+  // Modal state
+  const [isModalOpen, setIsModalOpen] = useState(false);
+  const [selectedEmployeeId, setSelectedEmployeeId] = useState<string | null>(
+    null
+  );
+
   const normalize = (str: string) =>
     str.toLowerCase().trim().replace(/\s+/g, " ");
 
-  // Filter employees by name based on search query
   const filteredEmployees = useMemo(() => {
     const query = normalize(searchQuery);
     if (!query) return employees;
-
     return employees.filter((emp) => normalize(emp.fullName).includes(query));
   }, [employees, searchQuery]);
 
@@ -43,6 +48,26 @@ export default function EmployeeListClient({
     }).format(salary);
   };
 
+  // Open confirmation modal
+  const openDeleteModal = (id: string) => {
+    setSelectedEmployeeId(id);
+    setIsModalOpen(true);
+  };
+
+  // Delete employee
+  const handleDelete = async () => {
+    if (!selectedEmployeeId) return;
+
+    try {
+      await deleteEmployeeAction(selectedEmployeeId);
+
+      setSelectedEmployeeId(null);
+      setIsModalOpen(false);
+    } catch (err) {
+      console.error(err);
+    }
+  };
+
   return (
     <div className="space-y-4">
       {/* Search Bar */}
@@ -55,7 +80,6 @@ export default function EmployeeListClient({
             className="bg-white w-full rounded outline-0 border border-gray-300 px-10 py-2 focus:border-primary transition-all"
             placeholder="Search employees..."
           />
-
           <svg
             className="absolute left-3 top-3 w-5 h-5 text-gray-400"
             fill="none"
@@ -116,17 +140,18 @@ export default function EmployeeListClient({
                     <td className="px-6 py-4">
                       {formatSalary(emp.baseSalary)}
                     </td>
-
                     <td className="px-6 py-4">
                       <span className="px-2.5 py-0.5 rounded-full text-xs font-medium bg-green-100 text-green-800">
                         active
                       </span>
                     </td>
-
                     <td className="px-6 py-4 flex items-center space-x-2">
                       <EyeIcon className="w-5 cursor-pointer hover:text-blue-500" />
                       <PencilIcon className="w-5 cursor-pointer hover:text-yellow-500" />
-                      <TrashIcon className="w-5 cursor-pointer hover:text-red-600" />
+                      <TrashIcon
+                        className="w-5 cursor-pointer hover:text-red-600"
+                        onClick={() => openDeleteModal(emp._id)}
+                      />
                     </td>
                   </tr>
                 ))}
@@ -141,6 +166,32 @@ export default function EmployeeListClient({
           </p>
         )}
       </section>
+
+      {/* Modal */}
+      <Modal
+        isOpen={isModalOpen}
+        onClose={() => setIsModalOpen(false)}
+        size="md"
+      >
+        <div className="space-y-10">
+          <p>Are you sure you want to delete this employee?</p>
+
+          <div className="flex justify-end gap-2">
+            <button
+              className="px-4 py-2 bg-gray-300 rounded cursor-pointer"
+              onClick={() => setIsModalOpen(false)}
+            >
+              Cancel
+            </button>
+            <button
+              className="px-4 py-2 bg-red-600 text-white rounded cursor-pointer"
+              onClick={handleDelete}
+            >
+              Delete
+            </button>
+          </div>
+        </div>
+      </Modal>
     </div>
   );
 }

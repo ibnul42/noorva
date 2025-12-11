@@ -6,6 +6,7 @@ import {
   CheckCircleIcon,
   CalendarDaysIcon,
 } from "@heroicons/react/24/outline";
+import type { Employee } from "./type";
 
 type CardProps = {
   title: string;
@@ -15,7 +16,7 @@ type CardProps = {
 
 function StatCard({ title, value, Icon }: CardProps) {
   return (
-    <div className="bg-gray-50 rounded-xl shadow-sm p-4 flex items-center gap-4">
+    <div className="bg-gray-50 rounded-xl shadow-sm px-4 py-6 flex items-center gap-4">
       <div className="w-12 h-12 rounded-full bg-green-50 flex items-center justify-center">
         <Icon className="w-6 h-6 text-green-600" />
       </div>
@@ -28,13 +29,33 @@ function StatCard({ title, value, Icon }: CardProps) {
   );
 }
 
-export default function StatsCards() {
+interface StatsCardsProps {
+  employees: Employee[];
+}
+
+export default function StatsCards({ employees }: StatsCardsProps) {
+  const totalEmployees = employees.length;
+  const activeEmployees = employees.length;
+  const departments = new Set(employees.map((e) => e.department)).size;
+
   return (
     <div className="px-3">
-      <div className="max-w-5xl mx-auto grid grid-cols-1 sm:grid-cols-3 gap-4">
-        <StatCard title="Total Employees" value={0} Icon={UserPlusIcon} />
-        <StatCard title="Active" value={0} Icon={CheckCircleIcon} />
-        <StatCard title="Departments" value={0} Icon={CalendarDaysIcon} />
+      <div className="grid grid-cols-1 sm:grid-cols-3 gap-4">
+        <StatCard
+          title="Total Employees"
+          value={totalEmployees}
+          Icon={UserPlusIcon}
+        />
+        <StatCard
+          title="Active"
+          value={activeEmployees}
+          Icon={CheckCircleIcon}
+        />
+        <StatCard
+          title="Departments"
+          value={departments}
+          Icon={CalendarDaysIcon}
+        />
       </div>
     </div>
   );

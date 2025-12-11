@@ -256,7 +256,7 @@ export default function AddEmployeeForm({ onClose }: { onClose: () => void }) {
         <button
           type="submit"
           disabled={loading}
-          className={`px-6 py-2 bg-green-600 text-white font-medium rounded transition-all ${
+          className={`px-6 py-2 bg-green-600 text-white font-medium rounded transition-all cursor-pointer ${
             loading ? "opacity-50 cursor-not-allowed" : "hover:bg-green-700"
           }`}
         >

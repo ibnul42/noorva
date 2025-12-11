@@ -3,24 +3,20 @@
 import React, { useState } from "react";
 import Modal from "@/components/Modal";
 import AddEmployeeForm from "./AddEmployeeForm";
-import { useRouter } from "next/navigation";
 
 export default function EmployeeActionsClient() {
   const [open, setOpen] = useState(false);
-  const router = useRouter();
 
   const handleOpen = () => setOpen(true);
   const handleClose = () => setOpen(false);
 
   const handleSuccessClose = () => {
     setOpen(false);
-    // Refresh the current route to re-run server components and fetch fresh data
-    router.refresh();
   };
 
   return (
     <div className="flex justify-between items-center w-full">
-      <p className="font-semibold">Employee List</p>
+      <h1 className="text-2xl font-semibold">Employee List</h1>
       <button
         onClick={handleOpen}
         className="px-4 py-1.5 cursor-pointer bg-primary text-white rounded flex items-center gap-2"
