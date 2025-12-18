@@ -1,5 +1,7 @@
 const Document = require("../models/Document");
 const { Error, handleError } = require("../lib/errors");
+const fs = require("fs");
+const path = require("path");
 
 // Upload a new document
 const uploadDocument = async (req, res) => {
@@ -77,16 +79,29 @@ const updateDocument = async (req, res) => {
   }
 };
 
-// Soft delete document
 const deleteDocument = async (req, res) => {
   try {
     const document = await Document.findById(req.params.id);
-    if (!document) return Error(res, 404, "Document not found");
+    if (!document) {
+      return Error(res, 404, "Document not found");
+    }
 
+    // 🔹 Remove file from storage
+    if (document.file) {
+      const filePath = path.resolve(document.file);
+
+      if (fs.existsSync(filePath)) {
+        fs.unlinkSync(filePath);
+      }
+    }
+
+    // 🔹 Soft delete in DB
     document.isActive = false;
     await document.save();
-    res.json({ message: "Document deleted" });
+
+    res.status(200).json({ message: "Document deleted successfully" });
   } catch (err) {
+    console.error(err);
     handleError(res, err);
   }
 };

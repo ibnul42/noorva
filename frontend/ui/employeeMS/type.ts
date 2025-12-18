@@ -16,16 +16,16 @@ export interface Employee {
 }
 
 export interface Attendance {
-  _id?: string ;      // MongoDB document ID
-  employee: string ;  // Reference to Employee._id
-  date: string;                 // ISO date string (or Date)
+  _id?: string; // MongoDB document ID
+  employee: string; // Reference to Employee._id
+  date: string; // ISO date string (or Date)
   status: string;
-  check_in?: string;            // ISO date string (or Date)
-  check_out?: string;           // ISO date string (or Date)
+  check_in?: string; // ISO date string (or Date)
+  check_out?: string; // ISO date string (or Date)
   notes?: string;
-  worked_minutes: number;       // total minutes worked
-  createdAt?: string;           // auto by timestamps
-  updatedAt?: string;           // auto by timestamps
+  worked_minutes: number; // total minutes worked
+  createdAt?: string; // auto by timestamps
+  updatedAt?: string; // auto by timestamps
 }
 
 export interface MenuItem {
@@ -55,6 +55,7 @@ export interface AttendancePayload {
 }
 
 export type MenuId = "employee" | "attendance" | "salary" | "reports";
+
 export const VALID_MENU_ID_SET = new Set<string>([
   "employee",
   "attendance",

@@ -23,3 +23,19 @@ export async function uploadDocument(formData: FormData) {
 
   return res.json();
 }
+
+export async function deleteDocument(documentId: string) {
+  const res = await fetch(
+    `${apiUrl}/api/documents/${documentId}`,
+    {
+      method: "DELETE",
+      credentials: "include",
+    }
+  );
+
+  if (!res.ok) {
+    throw new Error("Failed to delete document");
+  }
+
+  return res.json();
+}

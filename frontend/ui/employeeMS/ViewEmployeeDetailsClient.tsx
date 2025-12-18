@@ -9,6 +9,8 @@ import { useState } from "react";
 import clsx from "clsx";
 import { formatDateYYYYMMDD } from "@/lib/formatDate";
 import EmployeeDocuments from "./EmployeeDocuments";
+import { EmployeeDocument } from "./constants";
+import { fetchDocuments } from "./documentAction";
 
 type Tab = "details" | "documents" | "history";
 
@@ -24,6 +26,11 @@ export default function ViewEmployeeDetailsClient({ employeeId }: Props) {
     queryKey: ["employee", employeeId],
     queryFn: () => fetchEmployeeByIdAction(employeeId),
   });
+
+  const { data: documents = [] } = useQuery<EmployeeDocument[]>({
+      queryKey: ["employee-documents", employeeId],
+      queryFn: () => fetchDocuments(employeeId),
+    });
 
   if (isError || !employee) {
     return (
@@ -61,11 +68,11 @@ export default function ViewEmployeeDetailsClient({ employeeId }: Props) {
             className={clsx(
               "pb-2 text-sm capitalize transition py-1.5 px-4 rounded cursor-pointer",
               activeTab === tab
-                ? "bg-white font-medium"
+                ? "bg-white"
                 : "opacity-60"
             )}
           >
-            {tab}
+            {tab} {tab==='documents' && `(${documents.length})`}
           </button>
         ))}
       </div>

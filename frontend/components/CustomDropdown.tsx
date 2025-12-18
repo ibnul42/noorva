@@ -51,7 +51,7 @@ export default function CustomDropdown({
         <ChevronDownIcon className={`w-4 h-5 transition-transform ${isOpen ? "rotate-180" : ""}`} />
       </button>
       {isOpen && (
-        <div className="absolute z-10 w-full mt-1 bg-gray-200/60 border border-gray-300 rounded-lg shadow-lg max-h-60 overflow-y-auto">
+        <div className="absolute z-10 w-full mt-1 bg-gray-200 border border-gray-300 rounded-lg shadow-lg max-h-60 overflow-y-auto">
           {options.map((option) => (
             <button
               key={option.value}
@@ -60,7 +60,7 @@ export default function CustomDropdown({
                 onChange(option.value);
                 setIsOpen(false);
               }}
-              className="w-full px-3 py-2 text-left hover:bg-gray-200 focus:bg-gray-200 focus:outline-none"
+              className="w-full px-3 py-2 text-left hover:bg-gray-300/60 focus:bg-gray-200 focus:outline-none"
             >
               {option.label}
             </button>
