@@ -23,6 +23,30 @@ export async function fetchEmployeesAction(): Promise<Employee[]> {
   }
 }
 
+export async function fetchEmployeeByIdAction(
+  employeeId: string
+): Promise<Employee | null> {
+  try {
+    const response = await fetch(`${apiUrl}/api/employees/${employeeId}`, {
+      method: "GET",
+      headers: { "Content-Type": "application/json" },
+      next: {
+        revalidate: 60,
+        tags: ["employee-list", `employee-${employeeId}`],
+      },
+    });
+
+    if (!response.ok) return null;
+
+    const data: Employee = await response.json();
+    return data;
+  } catch (err) {
+    console.error("Failed to fetch employee:", err);
+    return null;
+  }
+}
+
+
 export async function addEmployeeAction(formData: any) {
   const response = await fetch(`${apiUrl}/api/employees`, {
     method: "POST",
@@ -33,6 +57,20 @@ export async function addEmployeeAction(formData: any) {
   if (!response.ok) {
     throw new Error("Failed to add employee");
   }
+  revalidateTag("employee-list");
+}
+
+export async function updateEmployeeAction(id: string, formData: any) {
+  const response = await fetch(`${apiUrl}/api/employees/${id}`, {
+    method: "PUT", // or PATCH depending on your API
+    headers: { "Content-Type": "application/json" },
+    body: JSON.stringify(formData),
+  });
+
+  if (!response.ok) {
+    throw new Error("Failed to update employee");
+  }
+
   revalidateTag("employee-list");
 }
 
@@ -78,11 +116,11 @@ export async function fetchAttendanceAction(query: AttendanceQuery = {}) {
 export async function updateAttendanceAction(
   id: string,
   data: Record<string, any>,
-  employeeId?: string 
+  employeeId?: string
 ) {
   try {
     const response = await fetch(`${apiUrl}/api/attendance/${id}`, {
-      method: "PUT", 
+      method: "PUT",
       headers: { "Content-Type": "application/json" },
       body: JSON.stringify(data),
       next: { revalidate: 0 },

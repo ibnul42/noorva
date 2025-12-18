@@ -1,22 +1,30 @@
 "use client";
 
 import React, { useState } from "react";
-import { addEmployeeAction } from "./actions";
+import type { Employee } from "./type";
+import { updateEmployeeAction } from "./actions";
 
-export default function AddEmployeeForm({ onClose }: { onClose: () => void }) {
+export default function EditEmployeeForm({
+  employee,
+  onClose,
+}: {
+  employee: Employee;
+  onClose: () => void;
+}) {
   const [formData, setFormData] = useState({
-    fullName: "",
-    employeeId: "",
-    department: "",
-    designation: "",
-    phoneNumber: "",
-    email: "",
-    joiningDate: "",
-    baseSalary: "0",
-    gender: "",
-    nidNumber: "",
-    presentAddress: "",
+    fullName: employee.fullName || "",
+    employeeId: employee.employeeId || "",
+    department: employee.department || "",
+    designation: employee.designation || "",
+    phoneNumber: employee.phoneNumber || "",
+    email: employee.email || "",
+    joiningDate: employee.joiningDate || "",
+    baseSalary: employee.baseSalary?.toString() || "0",
+    gender: employee.gender || "",
+    nidNumber: employee.nidNumber || "",
+    presentAddress: employee.presentAddress || "",
   });
+
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState("");
 
@@ -45,28 +53,11 @@ export default function AddEmployeeForm({ onClose }: { onClose: () => void }) {
         baseSalary: parseInt(formData.baseSalary) || 0,
       };
 
-      await addEmployeeAction(cleanData); // ⬅️ Use server action
+      await updateEmployeeAction(employee._id, cleanData); // ⬅️ update server action
 
-      // Reset form + close modal
-      setFormData({
-        fullName: "",
-        employeeId: "",
-        department: "",
-        designation: "",
-        phoneNumber: "",
-        email: "",
-        joiningDate: "",
-        baseSalary: "0",
-        gender: "",
-        nidNumber: "",
-        presentAddress: "",
-      });
-
-      onClose();
-
-      // ⚡ No need to manually refresh list → server action already revalidated page
+      onClose(); // close modal
     } catch (error) {
-      setError("Failed to add employee");
+      setError("Failed to update employee");
     } finally {
       setLoading(false);
     }
@@ -74,7 +65,7 @@ export default function AddEmployeeForm({ onClose }: { onClose: () => void }) {
 
   return (
     <form onSubmit={handleSubmit} className="space-y-4">
-      <h2 className="text-2xl font-semibold mb-4">Add New Employee</h2>
+      <h2 className="text-2xl font-semibold mb-4">Edit Employee</h2>
 
       {/* Full Name & Employee ID */}
       <div className="grid grid-cols-2 gap-4">
@@ -87,11 +78,11 @@ export default function AddEmployeeForm({ onClose }: { onClose: () => void }) {
             name="fullName"
             value={formData.fullName}
             onChange={handleChange}
-            placeholder="Enter full name"
-            className="w-full px-3 py-2 border border-gray-300 rounded outline-0 focus:border-primary transition-all"
+            className="w-full px-3 py-2 border border-gray-300 rounded outline-0 focus:border-primary"
             required
           />
         </div>
+
         <div>
           <label className="block text-sm font-medium text-gray-700 mb-1">
             Employee ID
@@ -101,8 +92,7 @@ export default function AddEmployeeForm({ onClose }: { onClose: () => void }) {
             name="employeeId"
             value={formData.employeeId}
             onChange={handleChange}
-            placeholder="Auto-generated if empty"
-            className="w-full px-3 py-2 border border-gray-300 rounded outline-0 focus:border-primary transition-all"
+            className="w-full px-3 py-2 border border-gray-300 rounded outline-0 focus:border-primary"
           />
         </div>
       </div>
@@ -118,8 +108,7 @@ export default function AddEmployeeForm({ onClose }: { onClose: () => void }) {
             name="department"
             value={formData.department}
             onChange={handleChange}
-            placeholder="Enter department"
-            className="w-full px-3 py-2 border border-gray-300 rounded outline-0 focus:border-primary transition-all"
+            className="w-full px-3 py-2 border border-gray-300 rounded outline-0"
           />
         </div>
         <div>
@@ -131,8 +120,7 @@ export default function AddEmployeeForm({ onClose }: { onClose: () => void }) {
             name="designation"
             value={formData.designation}
             onChange={handleChange}
-            placeholder="Enter designation"
-            className="w-full px-3 py-2 border border-gray-300 rounded outline-0 focus:border-primary transition-all"
+            className="w-full px-3 py-2 border border-gray-300 rounded outline-0"
           />
         </div>
       </div>
@@ -148,10 +136,10 @@ export default function AddEmployeeForm({ onClose }: { onClose: () => void }) {
             name="phoneNumber"
             value={formData.phoneNumber}
             onChange={handleChange}
-            placeholder="Enter phone number"
-            className="w-full px-3 py-2 border border-gray-300 rounded outline-0 focus:border-primary transition-all"
+            className="w-full px-3 py-2 border border-gray-300 rounded outline-0"
           />
         </div>
+
         <div>
           <label className="block text-sm font-medium text-gray-700 mb-1">
             Email
@@ -161,8 +149,7 @@ export default function AddEmployeeForm({ onClose }: { onClose: () => void }) {
             name="email"
             value={formData.email}
             onChange={handleChange}
-            placeholder="Enter email"
-            className="w-full px-3 py-2 border border-gray-300 rounded outline-0 focus:border-primary transition-all"
+            className="w-full px-3 py-2 border border-gray-300 rounded outline-0"
           />
         </div>
       </div>
@@ -178,9 +165,10 @@ export default function AddEmployeeForm({ onClose }: { onClose: () => void }) {
             name="joiningDate"
             value={formData.joiningDate}
             onChange={handleChange}
-            className="w-full px-3 py-2 border border-gray-300 rounded outline-0 focus:border-primary transition-all"
+            className="w-full px-3 py-2 border border-gray-300 rounded outline-0"
           />
         </div>
+
         <div>
           <label className="block text-sm font-medium text-gray-700 mb-1">
             Base Salary (BDT)
@@ -190,8 +178,7 @@ export default function AddEmployeeForm({ onClose }: { onClose: () => void }) {
             name="baseSalary"
             value={formData.baseSalary}
             onChange={handleChange}
-            placeholder="0"
-            className="w-full px-3 py-2 border border-gray-300 rounded outline-0 focus:border-primary transition-all"
+            className="w-full px-3 py-2 border border-gray-300 rounded outline-0"
           />
         </div>
       </div>
@@ -206,7 +193,7 @@ export default function AddEmployeeForm({ onClose }: { onClose: () => void }) {
             name="gender"
             value={formData.gender}
             onChange={handleChange}
-            className="w-full px-3 py-2 border border-gray-300 rounded outline-0 focus:border-primary transition-all bg-white"
+            className="w-full px-3 py-2 border border-gray-300 rounded bg-white outline-0"
           >
             <option value="">Select gender</option>
             <option value="Male">Male</option>
@@ -214,6 +201,7 @@ export default function AddEmployeeForm({ onClose }: { onClose: () => void }) {
             <option value="Other">Other</option>
           </select>
         </div>
+
         <div>
           <label className="block text-sm font-medium text-gray-700 mb-1">
             NID Number
@@ -223,8 +211,7 @@ export default function AddEmployeeForm({ onClose }: { onClose: () => void }) {
             name="nidNumber"
             value={formData.nidNumber}
             onChange={handleChange}
-            placeholder="Enter NID number"
-            className="w-full px-3 py-2 border border-gray-300 rounded outline-0 focus:border-primary transition-all"
+            className="w-full px-3 py-2 border border-gray-300 rounded outline-0"
           />
         </div>
       </div>
@@ -238,13 +225,11 @@ export default function AddEmployeeForm({ onClose }: { onClose: () => void }) {
           name="presentAddress"
           value={formData.presentAddress}
           onChange={handleChange}
-          placeholder="Enter present address"
           rows={4}
-          className="w-full px-3 py-2 border border-gray-300 rounded outline-0 focus:border-primary transition-all resize-none"
+          className="w-full px-3 py-2 border border-gray-300 rounded outline-0 resize-none"
         />
       </div>
 
-      {/* Submit Button */}
       {error && (
         <div className="p-3 bg-red-50 border border-red-200 rounded text-red-700 text-sm">
           {error}
@@ -255,11 +240,11 @@ export default function AddEmployeeForm({ onClose }: { onClose: () => void }) {
         <button
           type="submit"
           disabled={loading}
-          className={`px-6 py-2 bg-green-600 text-white font-medium rounded transition-all cursor-pointer ${
-            loading ? "opacity-50 cursor-not-allowed" : "hover:bg-green-700"
+          className={`px-6 py-2 bg-blue-600 text-white font-medium rounded transition-all ${
+            loading ? "opacity-50 cursor-not-allowed" : "hover:bg-blue-700"
           }`}
         >
-          {loading ? "Adding..." : "Add Employee"}
+          {loading ? "Saving..." : "Save Changes"}
         </button>
       </div>
     </form>

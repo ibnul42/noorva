@@ -1,6 +1,7 @@
 # Ignore backend dependencies (only)
 backend/node_modules/
 backend/.env
+backend/uploads
 
 # Ignore frontend dependencies (only)
 frontend/node_modules/

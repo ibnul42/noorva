@@ -1,10 +1,11 @@
 import type { Metadata } from "next";
 import { Geist, Geist_Mono } from "next/font/google";
 import "./globals.css";
-import NavBar from '@/components/NavBar'
-import Footer from '@/components/Footer'
-import { ToastContainer } from 'react-toastify'
-import 'react-toastify/dist/ReactToastify.css'
+import NavBar from "@/components/NavBar";
+import Footer from "@/components/Footer";
+import { ToastContainer } from "react-toastify";
+import "react-toastify/dist/ReactToastify.css";
+import { TanstackProvider } from "@/components/providers/tanstack-provider";
 
 const geistSans = Geist({
   variable: "--font-geist-sans",
@@ -28,11 +29,15 @@ export default function RootLayout({
 }>) {
   return (
     <html lang="en">
-      <body className={`${geistSans.variable} ${geistMono.variable} antialiased min-h-screen flex flex-col`}>
-        <NavBar />
-        <main className="flex-1">{children}</main>
-        <Footer />
-        <ToastContainer position="top-center" />
+      <body
+        className={`${geistSans.variable} ${geistMono.variable} antialiased min-h-screen flex flex-col`}
+      >
+        <TanstackProvider>
+          <NavBar />
+          <main className="flex-1">{children}</main>
+          <Footer />
+          <ToastContainer position="top-center" />
+        </TanstackProvider>
       </body>
     </html>
   );

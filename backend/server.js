@@ -23,10 +23,14 @@ const usersRouter = require("./routes/users");
 const superUsersRouter = require("./routes/superUsers");
 const employeesRouter = require("./routes/employees");
 const attendanceRouter = require("./routes/attendance");
+const documentRouter = require("./routes/document");
+
 app.use("/api/users", usersRouter);
 app.use("/api/users", superUsersRouter);
 app.use("/api/employees", employeesRouter);
 app.use("/api/attendance", attendanceRouter);
+app.use("/api/documents", documentRouter);
+
 
 const { connectDB } = require("./helper/db");
 
