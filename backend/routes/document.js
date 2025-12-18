@@ -25,7 +25,13 @@ router.get("/", requireAuth, getDocuments);
 router.get("/:id", requireAuth, getDocument);
 
 // Update document
-router.patch("/:id", requireAuth, updateDocument);
+router.patch(
+  "/:id",
+  requireAuth,
+  documentUpload.single("file"),
+  updateDocument
+);
+router.put("/:id", requireAuth, updateDocument);
 
 // Soft delete document
 router.delete("/:id", requireAuth, deleteDocument);
@@ -58,18 +64,29 @@ router.get("/view/:id", requireAuth, async (req, res) => {
       return res.status(404).json({ message: "Document not found" });
     }
 
-    const filePath = path.resolve(doc.file);
+    const filePath = path.resolve(__dirname, "../uploads", doc.file);
     if (!fs.existsSync(filePath)) {
       return res.status(404).json({ message: "File not found on server" });
     }
 
+    let mimeType = doc.mimeType || "application/octet-stream";
+    if (path.extname(doc.file).toLowerCase() === ".pdf") {
+      mimeType = "application/pdf";
+    }
+
+    res.setHeader("Content-Type", mimeType);
     res.setHeader(
       "Content-Disposition",
       `inline; filename="${path.basename(doc.file)}"`
     );
-    res.setHeader("Content-Type", doc.mimeType);
 
-    res.sendFile(filePath);
+    const fileStream = fs.createReadStream(filePath);
+    fileStream.pipe(res);
+
+    fileStream.on("error", (err) => {
+      console.error(err);
+      res.status(500).json({ message: "Error reading file" });
+    });
   } catch (err) {
     console.error(err);
     res.status(500).json({ message: "Failed to view file" });

@@ -24,6 +24,26 @@ export async function uploadDocument(formData: FormData) {
   return res.json();
 }
 
+/**
+ * Update document (title, type, optional file)
+ */
+export async function updateDocument(
+  documentId: string,
+  formData: FormData
+) {
+  const res = await fetch(`${apiUrl}/api/documents/${documentId}`, {
+    method: "PATCH",
+    body: formData,
+    credentials: "include",
+  });
+
+  if (!res.ok) {
+    throw new Error("Failed to update document");
+  }
+
+  return res.json();
+}
+
 export async function deleteDocument(documentId: string) {
   const res = await fetch(
     `${apiUrl}/api/documents/${documentId}`,

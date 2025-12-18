@@ -5,10 +5,12 @@ import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
 import {
   deleteDocument,
   fetchDocuments,
+  updateDocument,
   uploadDocument,
 } from "./documentAction";
 import CustomDropdown from "@/components/CustomDropdown";
 import {
+  ArrowUpTrayIcon,
   DocumentIcon,
   EyeIcon,
   PencilIcon,
@@ -27,12 +29,12 @@ interface Props {
   employeeId: string;
 }
 
-
 export default function EmployeeDocuments({ employeeId }: Props) {
   const [title, setTitle] = useState("");
   const [type, setType] = useState("CV_RESUME");
   const fileInputRef = useRef<HTMLInputElement>(null);
 
+  const [editDoc, setEditDoc] = useState<EmployeeDocument | null>(null);
   const [deleteDocId, setDeleteDocId] = useState<string | null>(null);
 
   const queryClient = useQueryClient();
@@ -180,14 +182,17 @@ export default function EmployeeDocuments({ employeeId }: Props) {
 
                     <td className="px-4 py-2 text-right flex items-center justify-end gap-3">
                       <EyeIcon
-                        className="w-4 cursor-pointer hover:text-blue-500"
                         onClick={() => handleViewDocument(doc._id)}
+                        className="w-4 cursor-pointer hover:text-blue-500"
                       />
 
-                      <PencilIcon className="w-4 cursor-pointer hover:text-yellow-500" />
+                      <PencilIcon
+                        onClick={() => setEditDoc(doc)}
+                        className="w-4 cursor-pointer hover:text-yellow-500"
+                      />
                       <TrashIcon
-                        className="w-4 cursor-pointer hover:text-red-600"
                         onClick={() => setDeleteDocId(doc._id)}
+                        className="w-4 cursor-pointer hover:text-red-600"
                       />
                     </td>
                   </tr>
@@ -227,6 +232,134 @@ export default function EmployeeDocuments({ employeeId }: Props) {
           </button>
         </div>
       </Modal>
+
+      {/* Edit document modal */}
+      {editDoc && (
+        <Modal isOpen={true} onClose={() => setEditDoc(null)} size="sm">
+          <EditDocumentForm
+            document={editDoc}
+            onClose={() => setEditDoc(null)}
+            employeeId={employeeId}
+          />
+        </Modal>
+      )}
+    </div>
+  );
+}
+
+function EditDocumentForm({
+  document,
+  onClose,
+  employeeId,
+}: {
+  document: EmployeeDocument;
+  onClose: () => void;
+  employeeId: string;
+}) {
+  const [title, setTitle] = useState(document.title);
+  const [titleChanged, setTitleChanged] = useState(false);
+
+  const updateFileInputRef = useRef<HTMLInputElement>(null);
+
+  const queryClient = useQueryClient();
+
+  const mutation = useMutation({
+    mutationFn: (formData: FormData) => {
+      return updateDocument(document._id, formData);
+    },
+    onSuccess: () => {
+      queryClient.invalidateQueries({
+        queryKey: ["employee-documents", employeeId],
+      });
+      onClose();
+    },
+  });
+
+  const handleFileChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+    const selectedFile = e.target.files?.[0];
+    if (!selectedFile) return;
+
+    const formData = new FormData();
+    formData.append("file", selectedFile);
+
+    mutation.mutate(formData);
+  };
+
+  const handleFileSelect = () => {
+    updateFileInputRef.current?.click();
+  };
+
+  const handleSave = () => {
+    const formData = new FormData();
+    if (titleChanged) {
+      formData.append("title", title);
+    }
+
+    mutation.mutate(formData);
+  };
+
+  return (
+    <div className="space-y-4">
+      <h2 className="text-lg font-semibold">Edit Document</h2>
+
+      <section>
+        <label className="" htmlFor="">
+          Title
+        </label>
+        <input
+          value={title}
+          onChange={(e) => {
+            setTitleChanged(true);
+            setTitle(e.target.value);
+          }}
+          className="block w-full h-10 my-1 rounded-lg border border-slate-400 px-3 focus:outline-none focus:ring-1 focus:ring-primary placeholder:text-sm text-sm"
+          placeholder="Title"
+        />
+      </section>
+
+      <input
+        type="file"
+        ref={updateFileInputRef}
+        className="hidden"
+        onChange={handleFileChange}
+      />
+
+      <button
+        type="button"
+        onClick={handleFileSelect}
+        disabled={!title || mutation.isPending}
+        className="px-4 py-2 border border-gray-100 hover:bg-gray-100/95 cursor-pointer h-full rounded disabled:opacity-50 flex items-center gap-2"
+      >
+        {mutation.isPending ? (
+          <div className="flex justify-center">
+            <div
+              className="w-4 h-4 border-2 border-primary
+                        border-t-transparent rounded-full 
+                        animate-spin"
+            ></div>
+          </div>
+        ) : (
+          <ArrowUpTrayIcon className="w-4" />
+        )}
+        <span>Replace File</span>
+      </button>
+
+      <div className="flex justify-end gap-2 pt-2">
+        <button
+          onClick={onClose}
+          className="px-4 py-2 text-sm border border-gray-100 hover:bg-gray-100/95 rounded cursor-pointer"
+        >
+          Cancel
+        </button>
+
+        <button
+          onClick={handleSave}
+          disabled={mutation.isPending}
+          className="px-4 py-2 text-sm bg-primary hover:bg-primary/90 text-white rounded cursor-pointer"
+        >
+          {mutation.isPending ? "Saving..." : "Save Changes"}
+        </button>
+      </div>
     </div>
   );
 }

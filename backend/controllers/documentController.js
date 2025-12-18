@@ -61,19 +61,35 @@ const getDocument = async (req, res) => {
   }
 };
 
-// Update document title/type
+// Update document title or file
 const updateDocument = async (req, res) => {
   try {
-    const { title, type } = req.body;
-
+    const { title } = req.body;
     const document = await Document.findById(req.params.id);
-    if (!document) return Error(res, 404, "Document not found");
 
+    if (!document || !document.isActive) {
+      return Error(res, 404, "Document not found");
+    }
+
+    // Update title
     if (title) document.title = title;
-    if (type) document.type = type;
+
+    // If new file uploaded → delete old one
+    if (req.file) {
+      if (document.file) {
+        const oldPath = path.resolve(document.file);
+        if (fs.existsSync(oldPath)) {
+          fs.unlinkSync(oldPath);
+        }
+      }
+
+      document.file = req.file.path;
+      document.originalName = req.file.originalname;
+    }
 
     await document.save();
-    res.json(document);
+
+    res.json({ message: "Document updated successfully", document });
   } catch (err) {
     handleError(res, err);
   }
