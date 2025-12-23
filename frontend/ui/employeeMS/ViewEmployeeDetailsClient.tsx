@@ -1,7 +1,7 @@
 "use client";
 
 import { useQuery } from "@tanstack/react-query";
-import { fetchEmployeeByIdAction } from "./actions";
+import { fetchEmployeeByIdAction, fetchEmployeeHistoryAction } from "./actions";
 import { Employee } from "./type";
 import { useRouter } from "next/navigation";
 import { ArrowLeftIcon } from "@heroicons/react/24/outline";
@@ -11,6 +11,8 @@ import { formatDateYYYYMMDD } from "@/lib/formatDate";
 import EmployeeDocuments from "./EmployeeDocuments";
 import { EmployeeDocument } from "./constants";
 import { fetchDocuments } from "./documentAction";
+import EmployeeHistory from "./EmployeeHistory";
+import { EmployeeHistory as HistoryType } from "./constants";
 
 type Tab = "details" | "documents" | "history";
 
@@ -28,9 +30,14 @@ export default function ViewEmployeeDetailsClient({ employeeId }: Props) {
   });
 
   const { data: documents = [] } = useQuery<EmployeeDocument[]>({
-      queryKey: ["employee-documents", employeeId],
-      queryFn: () => fetchDocuments(employeeId),
-    });
+    queryKey: ["employee-documents", employeeId],
+    queryFn: () => fetchDocuments(employeeId),
+  });
+
+  const { data: history = [] } = useQuery<HistoryType[]>({
+    queryKey: ["employee-history", employeeId],
+    queryFn: () => fetchEmployeeHistoryAction(employeeId),
+  });
 
   if (isError || !employee) {
     return (
@@ -67,20 +74,21 @@ export default function ViewEmployeeDetailsClient({ employeeId }: Props) {
             onClick={() => setActiveTab(tab)}
             className={clsx(
               "pb-2 text-sm capitalize transition py-1.5 px-4 rounded cursor-pointer",
-              activeTab === tab
-                ? "bg-white"
-                : "opacity-60"
+              activeTab === tab ? "bg-white" : "opacity-60"
             )}
           >
-            {tab} {tab==='documents' && `(${documents.length})`}
+            {tab} {tab === "documents" && `(${documents.length})`}{" "}
+            {tab === "history" && `(${history.length})`}
           </button>
         ))}
       </div>
 
       {/* Content */}
       {activeTab === "details" && <Details employee={employee} />}
-      {activeTab === "documents" && <EmployeeDocuments employeeId={employeeId} />}
-      {activeTab === "history" && <History />}
+      {activeTab === "documents" && (
+        <EmployeeDocuments employeeId={employeeId} />
+      )}
+      {activeTab === "history" && <EmployeeHistory employeeId={employeeId} />}
     </div>
   );
 }
@@ -101,18 +109,13 @@ function Details({ employee }: { employee: Employee }) {
       <Info label="Phone" value={employee.phoneNumber} />
       <Info label="Email" value={employee.email} />
       <Info label="NID Number" value={employee.nidNumber} />
-      <Info label="Joining Date" value={formatDateYYYYMMDD(employee.joiningDate)} />
+      <Info
+        label="Joining Date"
+        value={formatDateYYYYMMDD(employee.joiningDate)}
+      />
       <Info label="Gender" value={employee.gender} />
       <Info label="Base Salary" value={employee.baseSalary} />
       <Info label="Present Address" value={employee.presentAddress} />
     </section>
-  );
-}
-
-function History() {
-  return (
-    <div className="p-4 bg-gray-50 rounded">
-      <p className="text-sm text-gray-600">No history available.</p>
-    </div>
   );
 }

@@ -2,6 +2,7 @@
 
 import { revalidateTag } from "next/cache";
 import { AttendanceQuery, Employee } from "./type";
+import { EmployeeHistory } from "./constants";
 
 const apiUrl = process.env.NEXT_PUBLIC_API_BASE || "http://localhost:5000";
 
@@ -45,7 +46,6 @@ export async function fetchEmployeeByIdAction(
     return null;
   }
 }
-
 
 export async function addEmployeeAction(formData: any) {
   const response = await fetch(`${apiUrl}/api/employees`, {
@@ -141,5 +141,95 @@ export async function updateAttendanceAction(
   } catch (err) {
     console.error("Update attendance failed:", err);
     return null;
+  }
+}
+
+// Employee History Actions
+// Fetch history by employee ID
+export async function fetchEmployeeHistoryAction(
+  employeeId: string
+): Promise<EmployeeHistory[]> {
+  try {
+    const response = await fetch(
+      `${apiUrl}/api/employee-history/employee/${employeeId}`,
+      {
+        method: "GET",
+        headers: { "Content-Type": "application/json" },
+        next: {
+          revalidate: 0,
+          tags: [`employee-history-${employeeId}`],
+        },
+      }
+    );
+
+    if (!response.ok) return [];
+
+    const data = await response.json();
+    return data || [];
+  } catch (err) {
+    console.error("Failed to fetch employee history:", err);
+    return [];
+  }
+}
+
+// Create history
+export async function createEmployeeHistoryAction(
+  payload: Omit<EmployeeHistory, "_id" | "createdAt" | "updatedAt">
+): Promise<EmployeeHistory | null> {
+  try {
+    const response = await fetch(`${apiUrl}/api/employee-history`, {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify(payload),
+    });
+
+    if (!response.ok) return null;
+
+    const data = await response.json();
+
+    // ✅ SERVER-SIDE INVALIDATION
+    revalidateTag(`employee-history-${payload.employee}`);
+
+    return data;
+  } catch (err) {
+    console.error("Failed to create employee history:", err);
+    return null;
+  }
+}
+
+// Update History
+export async function updateEmployeeHistoryAction(
+  id: string,
+  payload: Partial<EmployeeHistory>
+): Promise<EmployeeHistory | null> {
+  try {
+    const response = await fetch(`${apiUrl}/api/employee-history/${id}`, {
+      method: "PUT",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify(payload),
+    });
+
+    if (!response.ok) return null;
+
+    return await response.json();
+  } catch (err) {
+    console.error("Failed to update employee history:", err);
+    return null;
+  }
+}
+
+// Delete History
+export async function deleteEmployeeHistoryAction(
+  id: string
+): Promise<boolean> {
+  try {
+    const response = await fetch(`${apiUrl}/api/employee-history/${id}`, {
+      method: "DELETE",
+    });
+
+    return response.ok;
+  } catch (err) {
+    console.error("Failed to delete employee history:", err);
+    return false;
   }
 }

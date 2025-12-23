@@ -171,7 +171,7 @@ export default function EmployeeDocuments({ employeeId }: Props) {
               <tbody className="divide-y divide-gray-200">
                 {documents.map((doc) => (
                   <tr key={doc._id} className="hover:bg-gray-200/40">
-                    <td className="px-4 py-2 text-sm">{doc.title}</td>
+                    <td className="px-4 py-2 text-sm h-12">{doc.title}</td>
 
                     <td className="px-4 py-2 text-sm">
                       {DOCUMENT_TYPE_LABEL_MAP[doc.type]}
@@ -180,7 +180,7 @@ export default function EmployeeDocuments({ employeeId }: Props) {
                       {formatDateYYYYMMDD(doc.updatedAt)}
                     </td>
 
-                    <td className="px-4 py-2 text-right flex items-center justify-end gap-3">
+                    <td className="px-4 py-2 text-right flex items-center h-12 justify-end gap-3">
                       <EyeIcon
                         onClick={() => handleViewDocument(doc._id)}
                         className="w-4 cursor-pointer hover:text-blue-500"

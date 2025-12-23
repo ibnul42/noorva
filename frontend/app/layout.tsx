@@ -36,7 +36,12 @@ export default function RootLayout({
           <NavBar />
           <main className="flex-1">{children}</main>
           <Footer />
-          <ToastContainer position="top-center" />
+          <ToastContainer
+            pauseOnHover={true}
+            limit={3}
+            position="bottom-right"
+            autoClose={3000}
+          />
         </TanstackProvider>
       </body>
     </html>

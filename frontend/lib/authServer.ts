@@ -7,10 +7,8 @@ export async function getUserFromCookies() {
     header = cookies().toString();
   } catch {}
 
-  const base = process.env.NEXT_PUBLIC_API_BASE || "";
-  const url = base
-    ? `${base.replace(/\/$/, "")}/api/users/me`
-    : "http://localhost:5000/api/users/me";
+  const base = process.env.NEXT_PUBLIC_API_BASE || "http://localhost:5000";
+  const url = `${base}/api/users/me`;
 
   const res = await fetch(url, {
     headers: header ? { cookie: header } : undefined,
