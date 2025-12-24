@@ -25,6 +25,7 @@ const employeesRouter = require("./routes/employees");
 const attendanceRouter = require("./routes/attendance");
 const documentRouter = require("./routes/document");
 const EmployeeHistoryRouter = require("./routes/employeeHistory");
+const EmployeeSalaryRouter = require("./routes/salary");
 
 app.use("/api/users", usersRouter);
 app.use("/api/users", superUsersRouter);
@@ -32,8 +33,10 @@ app.use("/api/employees", employeesRouter);
 app.use("/api/attendance", attendanceRouter);
 app.use("/api/employee-history", EmployeeHistoryRouter);
 app.use("/api/documents", documentRouter);
+app.use("/api/salary", EmployeeSalaryRouter);
 
 const { connectDB } = require("./helper/db");
+const { createMonthlySalaries } = require("./jobs/createMonthlySalaries");
 
 // ----------------------------
 // 🕒 CRON JOB INITIALIZATION
@@ -86,6 +89,7 @@ async function start() {
       try {
         console.log("Testing cron...");
         await initializeDailyAttendanceCron();
+        await createMonthlySalaries();
         console.log("Daily attendance initialization completed.");
       } catch (err) {
         console.error("Cron job error:", err);

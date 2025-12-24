@@ -2,6 +2,7 @@ import Link from "next/link";
 import Employee from "./Employee"; 
 import { MenuItem } from "./type"; 
 import AttendanceDashboard from "./AttendanceDashboard";
+import SalaryDashboard from "./SalaryDashboard";
 
 const menuItems: MenuItem[] = [
   { id: "employee", label: "Employees" },
@@ -23,7 +24,7 @@ export default function EmployeePage({ active }: EmployeeMenuProps) {
       case "attendance":
         return <AttendanceDashboard />;
       case "salary":
-        return <div className="p-6">💰 Salary Management Component</div>;
+        return <SalaryDashboard />;
       case "reports":
         return <div className="p-6">📥 Import/Export Component</div>;
       default:

@@ -62,3 +62,24 @@ export const VALID_MENU_ID_SET = new Set<string>([
   "salary",
   "reports",
 ]);
+
+export type Salary = {
+  _id: string;
+  employeeId: {
+    _id: string;
+    fullName: string;
+  };
+  year: number;
+  month: number;
+  baseSalary: number;
+  totalAllowance: number;
+  totalDeduction: number;
+  netSalary: number;
+  status: "DRAFT" | "PAID";
+  paidAt?: string;
+};
+
+export type SalaryAdjustment = {
+  title: string;
+  amount: number;
+};

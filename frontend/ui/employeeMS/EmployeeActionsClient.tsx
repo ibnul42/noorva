@@ -16,7 +16,7 @@ export default function EmployeeActionsClient() {
 
   return (
     <div className="flex justify-between items-center w-full">
-      <h1 className="text-2xl font-semibold">Employee List</h1>
+      <p className="text-2xl font-semibold">Employee List</p>
       <button
         onClick={handleOpen}
         className="px-4 py-1.5 cursor-pointer bg-primary text-white rounded flex items-center gap-2"
